@@ -4,7 +4,7 @@ A command line program designed to replace `zkCli.sh`, which comes with the ZooK
 
 The [original project](https://github.com/davidledwards/zookeeper), which contained both the API and CLI, was broken into two separate projects. The last commit before the original repository was cloned is [6ad2c34](https://github.com/davidledwards/zookeeper-cli/commit/6ad2c34d799d4373aa077d89eecfde6e7e8e1612).
 
-## Installing
+## Overview
 
 The CLI program can be downloaded from the Sonatype Repository in both [tar](https://search.maven.org/artifact/com.loopfor.zookeeper/zookeeper-cli/1.6.1/tar.gz) and [zip](https://search.maven.org/artifact/com.loopfor.zookeeper/zookeeper-cli/1.6.1/zip) formats.
 
@@ -22,7 +22,7 @@ zookeeper-cli-1.6.1/
 
 For convenience, you might place `zookeeper-cli-1.6.1/bin/zk` in your `PATH` or create an alias.
 
-## Invoking `zk`
+## Using `zk`
 
 ### Tips
 
@@ -459,6 +459,61 @@ Quit the program.
 
 ```shell
 zk> quit
+```
+
+## Releasing
+
+The following steps are required for publishing a new release either locally or to the Maven Central Repository.
+
+### Building
+
+Ensure that the version number in [build.sbt](build.sbt) is updated. Snapshots shoud not be published to the Maven Central Repository even though this is perfectly fine when publishing locally.
+
+Compile and test, ensuring that all tests are successful. All compiler warnings should be resolved.
+
+```shell
+sbt> compile
+...
+sbt> test
+...
+```
+
+### Publishing
+
+Publishing artifacts to the Maven Central Repository can only be done by the owner of this project, as this action requires credentials. Credentials should be placed in `$HOME/.sbt/1.0/sonatype.sbt` as follows.
+
+```scala
+credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", "<user>", "<password>")
+```
+
+Sonatype requires that artifacts be signed before publishing. The [sbt-pgp](https://github.com/sbt/sbt-pgp) site provides instructions for generating a GPG key pair.
+
+Consider publishing the signed artifacts locally before releasing to Sonatype.
+
+```shell
+sbt> publishLocalSigned  # sign and publish to local repo
+sbt> publishSigned       # sign and publish to Sonatype
+```
+
+### Sonatype
+
+Login to <https://oss.sonatype.org>. Click on `Staging Repositories` in the left panel, select the staged repository, and click `Close`. After a few minutes, refresh the page and click `Release` assuming all checks passed. The staged repository can always be dropped by clicking `Drop`.
+
+Once released, it could take several hours before the artifacts appear in the [Maven Central Repository](https://central.sonatype.com).
+
+### Finalizing
+
+Create a new tag using the convention `release-<version>`.
+
+```shell
+$ git tag -a release-<version> -m "release version <version>"
+```
+
+Finally, push all changes to GitHub.
+
+```shell
+$ git push --all origin
+$ git push --tags origin
 ```
 
 ## Contributing
