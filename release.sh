@@ -31,4 +31,9 @@ gh release create --title "${__VERSION}" --generate-notes "v${__VERSION}" \
     "${__BIN_DIR}/${__ZIP}" \
     "${__BIN_DIR}/${__ZIP}.sha256"
 
+if [ $? -ne 0 ]; then
+    echo "publish failed"
+    exit 1
+fi
+
 echo "released ${__VERSION}"

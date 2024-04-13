@@ -475,11 +475,11 @@ If the release process was problematic in any way, it can be deleted using the f
 gh release delete --cleanup-tag --yes <tag>
 ```
 
-Once released, push all changes to GitHub.
+Once released, push all changes to GitHub. The new tag will be created on the remote repository.
 
 ```shell
 $ git push origin master
-$ git push --tags origin master
+$ git pull --tags origin
 ```
 
 ## Contributing
