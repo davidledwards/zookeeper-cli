@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-lazy val scala_2_13 = "2.13.13"
-lazy val scala_3_2 = "3.2.2"
-lazy val supportedScalaVersions = List(scala_2_13, scala_3_2)
+enablePlugins(PackPlugin)
+import xerial.sbt.pack.PackPlugin._
 
 lazy val compilerSettings = Seq(
-  scalaVersion := scala_2_13,
-  crossScalaVersions := supportedScalaVersions,
+  scalaVersion := "3.2.2",
   scalacOptions ++= Seq(
     "-release:11",
     "-deprecation",
@@ -33,22 +31,21 @@ lazy val compilerSettings = Seq(
 lazy val dependencySettings = Seq(
   libraryDependencies ++= Seq(
     // Compile
-    "org.apache.zookeeper" % "zookeeper" % "3.9.2" exclude("jline", "jline"),
+    "com.loopfor.zookeeper" %% "zookeeper-client" % "1.7.1",
+    "com.loopfor.scalop" %% "scalop" % "2.3.1",
+    "jline" % "jline" % "2.14.6",
 
     // Test
-    "org.scalatest" %% "scalatest" % "3.2.13" % "test",
-    "io.dropwizard.metrics" % "metrics-core" % "3.2.5" % "test" exclude("org.slf4j", "slf4j-api"),
-    "org.xerial.snappy" % "snappy-java" % "1.1.7"
+    "org.scalatest" %% "scalatest" % "3.2.13" % "test"
   )
 )
 
-lazy val docSettings = Seq(
-  Compile / doc / scalacOptions ++= Seq("-no-link-warnings"),
-  autoAPIMappings := true,
-  apiURL := Some(url(s"https://davidedwards.io/zookeeper/api/${version.value}/"))
+lazy val packageSettings = packSettings ++ Seq(
+  crossPaths := false,
+  packMain := Map("zk" -> "com.loopfor.zookeeper.cli.CLI")
 )
 
-lazy val publishSettings = Seq(
+lazy val publishSettings = publishPackArchives ++ Seq(
   pomIncludeRepository := { _ => false },
   pomExtra :=
     <developers>
@@ -70,19 +67,19 @@ lazy val publishSettings = Seq(
 
 lazy val rootProject = (project in file(".")).
   settings(
-    name := "zookeeper-client",
+    name := "zookeeper-cli",
     organization := "com.loopfor.zookeeper",
-    version := "1.7.1",
-    description := "Scala API for ZooKeeper",
-    homepage := Some(url("https://github.com/davidledwards/zookeeper")),
+    version := "1.6.1",
+    description := "ZooKeeper CLI",
+    homepage := Some(url("https://github.com/davidledwards/zookeeper-cli")),
     licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
     scmInfo := Some(ScmInfo(
-      url(s"https://github.com/davidledwards/zookeeper/tree/release-${version.value}/zookeeper-client"),
-      "scm:git:https://github.com/davidledwards/zookeeper.git",
-      Some("scm:git:https://github.com/davidledwards/zookeeper.git")
+      url(s"https://github.com/davidledwards/zookeeper-cli/tree/release-${version.value}"),
+      "scm:git:https://github.com/davidledwards/zookeeper-cli.git",
+      Some("scm:git:https://github.com/davidledwards/zookeeper-cli.git")
     ))
   ).
   settings(compilerSettings: _*).
   settings(dependencySettings: _*).
-  settings(docSettings: _*).
+  settings(packageSettings: _*).
   settings(publishSettings: _*)
