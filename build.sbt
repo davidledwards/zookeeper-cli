@@ -45,41 +45,21 @@ lazy val packageSettings = packSettings ++ Seq(
   packMain := Map("zk" -> "com.loopfor.zookeeper.cli.CLI")
 )
 
-lazy val publishSettings = publishPackArchives ++ Seq(
-  pomIncludeRepository := { _ => false },
-  pomExtra :=
-    <developers>
-      <developer>
-        <id>davidledwards</id>
-        <name>David Edwards</name>
-        <email>david.l.edwards@gmail.com</email>
-      </developer>
-    </developers>,
-  publishMavenStyle := true,
-  Test / publishArtifact := false,
-  publishTo := Some(
-    if (version.value endsWith "SNAPSHOT")
-      "Sonatype Nexus Snapshot Repository" at "https://oss.sonatype.org/content/repositories/snapshots/"
-    else
-      "Sonatype Nexus Release Repository" at "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-  )
-)
-
 lazy val rootProject = (project in file(".")).
   settings(
     name := "zookeeper-cli",
     organization := "com.loopfor.zookeeper",
-    version := "1.6.1",
+    version := "1.7",
     description := "ZooKeeper CLI",
-    homepage := Some(url("https://github.com/davidledwards/zookeeper-cli")),
+    homepage := Some(url(s"https://github.com/davidledwards/${name.value}")),
     licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
     scmInfo := Some(ScmInfo(
-      url(s"https://github.com/davidledwards/zookeeper-cli/tree/release-${version.value}"),
-      "scm:git:https://github.com/davidledwards/zookeeper-cli.git",
-      Some("scm:git:https://github.com/davidledwards/zookeeper-cli.git")
-    ))
+      url(s"https://github.com/davidledwards/${name.value}/tree/release-${version.value}"),
+      s"scm:git:https://github.com/davidledwards/${name.value}.git",
+      Some(s"scm:git:https://github.com/davidledwards/${name.value}.git")
+    )),
+    versionScheme := Some("early-semver")
   ).
   settings(compilerSettings: _*).
   settings(dependencySettings: _*).
-  settings(packageSettings: _*).
-  settings(publishSettings: _*)
+  settings(packageSettings: _*)
