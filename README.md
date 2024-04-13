@@ -6,12 +6,12 @@ The [original project](https://github.com/davidledwards/zookeeper), which contai
 
 ## Overview
 
-The CLI program can be downloaded from the Sonatype Repository in both [tar](https://search.maven.org/artifact/com.loopfor.zookeeper/zookeeper-cli/1.6.1/tar.gz) and [zip](https://search.maven.org/artifact/com.loopfor.zookeeper/zookeeper-cli/1.6.1/zip) formats.
+As of version `1.7`, the CLI program can be downloaded from [GitHub](https://github.com/davidledwards/zookeeper-cli/releases). For versions prior to `1.7`, download from the [Maven Central Repository](https://search.maven.org/artifact/com.loopfor.zookeeper/zookeeper-cli)
 
 Unpacking the assembly will produce the following output:
 
 ```shell
-zookeeper-cli-1.6.1/
+zookeeper-cli-<version>/
 + bin/
   + zk
   + zk.bat
@@ -20,7 +20,7 @@ zookeeper-cli-1.6.1/
   + ...
 ```
 
-For convenience, you might place `zookeeper-cli-1.6.1/bin/zk` in your `PATH` or create an alias.
+For convenience, you might place `zookeeper-cli-<version>/bin/zk` in your `PATH` or create an alias.
 
 ## Using `zk`
 
@@ -463,57 +463,23 @@ zk> quit
 
 ## Releasing
 
-The following steps are required for publishing a new release either locally or to the Maven Central Repository.
+Releases are published on GitHub. The [release.sh](release.sh) script automates the entire process, which depends on the [GitHub CLI](https://cli.github.com/) being installed.
 
-### Building
+The version of the release is derived from the version specified in [build.sbt](build.sbt). A new release on GitHub generates a corresponding tag, so the assumption is that the version number has been appropriately incremented. Otherwise, the release creation process will fail.
 
-Ensure that the version number in [build.sbt](build.sbt) is updated. Snapshots shoud not be published to the Maven Central Repository even though this is perfectly fine when publishing locally.
+If the release process is successful, a new tag of the format `v<version>` is automatically created. For example, if the package version in `build.sbt` is `1.2.3`, then the corresponding tag is `v1.2.3`.
 
-Compile and test, ensuring that all tests are successful. All compiler warnings should be resolved.
-
-```shell
-sbt> compile
-...
-sbt> test
-...
-```
-
-### Publishing
-
-Publishing artifacts to the Maven Central Repository can only be done by the owner of this project, as this action requires credentials. Credentials should be placed in `$HOME/.sbt/1.0/sonatype.sbt` as follows.
-
-```scala
-credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", "<user>", "<password>")
-```
-
-Sonatype requires that artifacts be signed before publishing. The [sbt-pgp](https://github.com/sbt/sbt-pgp) site provides instructions for generating a GPG key pair.
-
-Consider publishing the signed artifacts locally before releasing to Sonatype.
+If the release process was problematic in any way, it can be deleted using the following command.
 
 ```shell
-sbt> publishLocalSigned  # sign and publish to local repo
-sbt> publishSigned       # sign and publish to Sonatype
+gh release delete --cleanup-tag --yes <tag>
 ```
 
-### Sonatype
-
-Login to <https://oss.sonatype.org>. Click on `Staging Repositories` in the left panel, select the staged repository, and click `Close`. After a few minutes, refresh the page and click `Release` assuming all checks passed. The staged repository can always be dropped by clicking `Drop`.
-
-Once released, it could take several hours before the artifacts appear in the [Maven Central Repository](https://central.sonatype.com).
-
-### Finalizing
-
-Create a new tag using the convention `release-<version>`.
+Once released, push all changes to GitHub.
 
 ```shell
-$ git tag -a release-<version> -m "release version <version>"
-```
-
-Finally, push all changes to GitHub.
-
-```shell
-$ git push --all origin
-$ git push --tags origin
+$ git push origin master
+$ git push --tags origin master
 ```
 
 ## Contributing
