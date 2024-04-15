@@ -51,14 +51,17 @@ lazy val rootProject = (project in file(".")).
     organization := "com.loopfor.zookeeper",
     version := "1.7",
     description := "ZooKeeper CLI",
-    homepage := Some(url(s"https://github.com/davidledwards/${name.value}")),
+    githubOwner := "davidledwards",
+    githubRepository := "zookeeper-cli",
+    homepage := Some(url(s"https://github.com/${githubOwner.value}/${githubRepository.value}")),
     licenses := Seq("Apache License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
     scmInfo := Some(ScmInfo(
-      url(s"https://github.com/davidledwards/${name.value}/tree/release-${version.value}"),
-      s"scm:git:https://github.com/davidledwards/${name.value}.git",
-      Some(s"scm:git:https://github.com/davidledwards/${name.value}.git")
+      url(s"https://github.com/${githubOwner.value}/${githubRepository.value}/tree/v${version.value}"),
+      s"scm:git:https://github.com/${githubOwner.value}/${githubRepository.value}.git",
+      Some(s"scm:git:https://github.com/${githubOwner.value}/${githubRepository.value}.git")
     )),
-    versionScheme := Some("early-semver")
+    versionScheme := Some("early-semver"),
+    resolvers += Resolver.githubPackages(githubOwner.value)
   ).
   settings(compilerSettings: _*).
   settings(dependencySettings: _*).
